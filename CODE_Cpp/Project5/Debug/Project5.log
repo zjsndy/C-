@@ -1,0 +1,6 @@
+﻿  test.c
+D:\Codefield\CODE_Cpp\Project5\test.c(74,13): warning C4473: “scanf_s”: 没有为格式字符串传递足够的参数
+D:\Codefield\CODE_Cpp\Project5\test.c(74,13): message : 占位符和其参数预计 2 可变参数，但提供的却是 1 参数
+D:\Codefield\CODE_Cpp\Project5\test.c(74,13): message : 缺失的可变参数 2 为格式字符串“%s”所需
+D:\Codefield\CODE_Cpp\Project5\test.c(74,13): message : 此参数用作缓冲区大小
+  Project5.vcxproj -> D:\Codefield\CODE_Cpp\Project5\Debug\Project5.exe
