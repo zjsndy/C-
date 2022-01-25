@@ -1408,5 +1408,344 @@ char* strcpy(char* dst,const char* src)
 
 
 
+#### 大小端
 
+1--------0x00 00 00 01
+
+大端：00 00 00 01
+
+小端：01 00 00 00
+
+##### 设计一个小程序判断当前机器的字节序
+
+```c
+int check_sys()
+{
+  int i = 1;
+  char *p = (char*)&i;//转变指针类型，目的是求1个字节的数是多少
+  return *p;
+}
+//改进一下
+int check_sys()
+{
+  int i = 1;
+  
+  return *(char*(&i));
+}
+//指针类型的意义
+//1.指针类型决定了指针解引用操作符能访问几个字节：char *p；*p访问了1个字节，int*p，*p访问四个字节
+//2.指针类型决定了指针+1，-1加的或者减的是几个字节：char*p;p+1跳过1个字符，int*p，p+1跳过一个整形，4个字节。
+```
+
+#### char * 指针
+
+```c
+char arr1[]="abcdef";
+char arr2[]="abcdef";
+char* p1="abcdef";
+char* p2="abcdef";
+//arr1[]和arr2[]占据的两个不同内存，无法比较大小
+//*p1和*p2占据的同一内存，即二者相同。
+```
+
+```c
+int arr[10]={1,2,3,4,5,6,7,8,9,10};
+int (*p)[10]=&arr;//数组的地址要存起来
+//上面的p就是数组指针
+//[]的优先级要比*高，所以用括号括起来。
+```
+
+#### 数组传参
+
+一维数组
+
+```c
+void test(int arr[])
+void test(int arr[10])
+void test(int *arr)
+void test2(int *arr[20])
+void test2(int **arr);
+int main()
+{
+  int arr[10]={0};
+  int *arr2[20]={0};
+  test(arr);
+  test2(arr2);
+}
+```
+
+二维数组传参
+
+```c
+void test(int arr[3][5])
+void test(int arr[][5])
+void test(int (*arr)[5])
+int main()
+{
+  int arr[3][5]={0};
+  test(arr);
+}
+```
+
+#### 数组指针
+
+```c
+char* arr[5];
+char* (*pa)[5]=&arr;
+//pa---指针变量的名字  *----pa是指针   char*----pa指向的数组的元素类型是char*
+//[5]----pa指向的数组是5个元素的char*
+
+int arr2[10]={0};
+int (*pa2)[10]=&arr2;
+
+int arr[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+int (*p)[10] = &arr;
+for (int i = 0; i < 10;i++)
+  {
+   // printf("%d ", (*p)[i]);
+   //printf("%d ",*(*p+i));
+  }
+
+```
+
+```c
+void print1(int (*p)[5],int x,int y)
+{
+  for (int i = 0; i < x;i++)
+  {
+    for (int j = 0; j < y;j++)
+    {
+       printf("%d ",p[i][j]);
+      //-----------------------------
+      //printf("%d ",*(p[i]+j));
+      //printf("%d ", *(*(p+i)+j));
+      //-----------------------------
+      //printf("%d ", (*(p + i))[j]);
+      //上面五种输出方式都可以
+    }
+    printf("\n");
+  }
+}
+int main ()
+{
+  int arr[3][5] = {{1, 2, 3, 4, 5}, {2, 3, 4, 5, 6}, {3, 4, 5, 6, 7}};
+  print1(arr, 3, 5);
+}
+```
+
+```c
+int arr[5];         //arr是一个5个元素的整形数组
+int *parrl[10]      //parr1是一个数组，数组有10个元素，每个元素的类型是int*，parrl是指针数组
+int (*parr2)[10]    //parr2是一个指针，该指针指向了一个数组，数组有10个元素，每个元素的类型是int-parr2是数组指针
+int (*parr3[10])[5] //parr3是一个数组，该数组有10个元素，每个元素是一个数组指针，该数组指针指向的数组有5个元素，每个元素是int
+```
+
+```c
+  int *p = &n;
+  int **pp = &p;
+  test(pp);
+  test(&p);
+
+ void test(int** ptr)
+{
+  printf("num=%d\n", **ptr);
+}
+//二级指针调用
+```
+
+#### 函数指针
+
+函数指针------------指向函数的指针
+
+&函数名 和 函数名 都是函数的地址
+
+```c
+int  (*pa)(int,int)=Add;
+*pa(2,3);//调用函数指针
+```
+
+```c
+(*(void(*)())0)();//把0强制类型转换成： void(*)()函数指针类型-0就是一个函数地址
+//调用0地址处的该函数
+
+void (*signal(int,void(*)(int)))(int);
+//signal是一个函数声明
+//signal函数的参数有2个，第一个是int，第二个是函数指针，该函数指针指向的函数的参数是int，返回类型是void
+//signal函数的返回类型是一个函数指针：该函数指针指向的函数的参数是int，返回类型是void
+
+typedef void(*pfun_t)(int);//重命名的形式与其他不同，pfun_t就是一个类型
+pfun_t signal(int,pfun_t);
+//这两个语句等价于第4行代码
+```
+
+函数指针的数组
+
+```c
+int (*parr[4])(int,int)={Add,Sub,Mul,Div};
+```
+
+```c
+char* my_strcpy(char* dest,const char* src);
+//写一个函数指针pf,能够指向my_strcpy
+char*(*pf)(char*,const char*)
+ //写一个函数指针数组pfArr，能够存放4个my——strcpy函数的地址
+  char* (*pf)(char *,const char*)
+```
+
+```c
+int (*pfArr[4])(int,int);//pfArr是一个数组-函数指针的数组
+int(*(*ppfArr)[4])(int,int)=&pfArr;//ppfArr是一个数组指针，指针指向的数组有4个元素
+//指向的数组的每个元素的类型是一个函数指针 int(*)(int,int)
+```
+
+#### 回调函数
+
+```c
+void print(char *str)
+{
+  printf("hehe:%s",str);
+}
+
+void test(void(*p)(char*))
+{
+  printf("test\n");
+  p("bit");
+}
+```
+
+#### qsort函数使用
+
+```c
+void qsort( void *base, size_t num, size_t width, int (__cdecl *compare )(const void *elem1, const void *elem2 ) );
+//库函数
+
+base
+
+Start of target array //目标数组的开始
+
+num
+
+Array size in elements//数组大小
+
+width
+
+Element size in bytes//元素大小（字节）
+
+compare
+
+Comparison function //比较功能
+
+elem1
+
+Pointer to the key for the search
+
+elem2
+
+Pointer to the array element to be compared with the key
+
+```
+
+```c
+//void* 类型的指针 可以接收任意类型的地址
+int a=10; 
+void* p=&a;
+//char *p=&a;这样类型不可以
+//void* 类型的指针 不能进行解引用操作
+//*p=0；这样就不行，p是void*类型
+//void* 类型的指针 不能进行+-整数的操作
+```
+
+```c
+#include <stdio.h> 
+#include <stdlib.h> 
+
+ struct stu
+    {
+        char name[20];
+        int age;
+    };
+
+int cmp_int(const void* e1,const void* e2)
+{
+    //比较两个整形值
+    return *(int *)e1 - *(int *)e2;
+}
+
+int cmp_float(const void* e1,const void* e2)
+{
+  /* if(*(float*)e1==*(float*)e2)
+        return 0;
+    else if(*(float*)e1 > *(float*)e2)
+        return 1;
+    else
+        return -1;*/
+   return ((int)(*(float *)e1 - *(float *)e2));
+}
+
+int cmp_stu_by_age(const void*e1,const void*e2)
+{
+   return ((struct stu*)e1)->age - ((struct stu*)e2)->age;
+}
+
+int cmp_stu_by_name(const void*e1,const void*e2)
+{
+    //比较名字就是比较字符串
+    //字符串比较不能直接用><=来比较，应该用strcmp函数
+    return strcmp(((struct stu *)e1)->name, ((struct stu *)e2)->name);
+}
+
+void test1()
+{
+    int arr[10] = {9, 8, 6, 5, 1, 2, 7, 3, 4, 0};
+    int sz = sizeof(arr) / sizeof(arr[0]);
+    qsort(arr, sz, sizeof(arr[0]), cmp_int);
+    for (int i = 0; i < sz;i++)
+    {
+        printf("%d ", arr[i]);
+    }
+}
+
+void test2()
+{
+    float f[] = {9.0, 8.0, 7.0, 6.0, 5.0, 4.0};
+    int sz = sizeof(f) / sizeof(f[0]);
+    qsort(f, sz, sizeof(f[0]), cmp_float);
+    for (int i = 0; i < sz;i++)
+    {
+        printf("%f ", f[i]);
+    }
+}
+
+void test3()
+{
+    struct stu s[3] = {{"zhangsan", 20}, {"lisi", 30}, {"wangwu", 10}};
+    int sz = sizeof(s) / sizeof(s[0]);
+    qsort(s, sz, sizeof(s[0]), cmp_stu_by_age);
+    for (int i = 0; i < sz;i++)
+    {
+        printf("%s,%d\n", s[i].name, s[i].age);
+    }
+}
+
+void test4()
+{
+    struct stu s[3] = {{"zhangsan", 20}, {"lisi", 30}, {"wangwu", 10}};
+    int sz = sizeof(s) / sizeof(s[0]);
+    qsort(s, sz, sizeof(s[0]), cmp_stu_by_name);
+    for (int i = 0; i < sz;i++)
+    {
+        printf("%s,%d\n", s[i].name, s[i].age);
+    }
+}
+
+int main ()
+{
+    //test1();
+    //test2();
+    //test3();
+    test4();
+    system("pause");
+    return 0;
+}
+```
 
