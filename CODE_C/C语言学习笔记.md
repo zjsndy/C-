@@ -1694,6 +1694,35 @@ int cmp_stu_by_name(const void*e1,const void*e2)
     return strcmp(((struct stu *)e1)->name, ((struct stu *)e2)->name);
 }
 
+void Swap(char* buf1,char* buf2,int width)
+{
+    for (int i = 0; i < width;i++)
+    {
+        char tmp = *buf1;
+        *buf1 = *buf2;
+        *buf2 = tmp;
+        buf1++;
+        buf2++;
+    }
+}
+
+//实现bubble_sort函数的程序员，他是否知道未来排序的数据类型-不知道
+//那程序员也不知道待比较的两个元素的类型
+void bubble_sort(void* base,int sz,int width,int (*cmp)(const void*e1,const void*e2))
+{
+    for (int i = 0; i < sz - 1;i++)
+    {
+        for (int j = 0; j < sz - 1 - i;j++)
+        {
+            if(cmp((char*)base+j*width,(char*)base+(j+1)*width)>0)
+            {
+                Swap((char *)base + j * width, (char *)base + (j + 1) *width, width);
+            }
+            
+        }
+    }
+}
+
 void test1()
 {
     int arr[10] = {9, 8, 6, 5, 1, 2, 7, 3, 4, 0};
@@ -1747,5 +1776,112 @@ int main ()
     system("pause");
     return 0;
 }
+```
+
+```c
+//数组名是首元素的地址
+//1.sizeof(数组名)-数组名表示整个数组
+//2.&数组名-数组名表示整个数组
+//一维数组
+int a[]={1,2,3,4};
+printf("%d\n",sizeof(a));//sizeof(数组名)-计算的是数组总大小-单位是字节-16
+printf("%d\n,sizeof(a+0)");//4/8-数组名表示首元素的值，a+0还是首元素地址，地址的大小就是4/8个字节
+printf("%d\n“,sizeof(*a));//4-数组名表示首元素地址，*a就是首元素，sizeof(*a)就是 4
+printf("%d\n”,sizeof(a+1));//4/8-数组名表示首元素的值，a+1是第二个元素地址，地址的大小就是4/8个字节
+printf("%d\n",sizeof(a[1]));//4-第2个元素的大小
+printf("%d\n“,sizeof(&a));//4/8 &a取出的是数组的地址，但数组的地址也是地址，地址的大小就为4/8个字节
+printf("%d\n”,sizeof(*&a));//16
+printf("%d\n“,sizeof(&a+1));//4/8-&a是数组地址，&a+1虽然地址跳过了整个数组，但还是地址
+printf("%d\n”,sizeof(&a[0]));//4/8
+printf("%d\n“,sizeof(&a[0]+1));//4/8
+```
+
+```c
+//字符数组
+char arr[]={'a','b','c','d','e','f'};
+printf("%d\n",sizeof(arr));//sizoef计算机的数组大小，6*1=6字节
+printf("%d\n",sizeof(arr+0));//4/8-arr是首元素的地址，arr+0还是首元素的地址 地址的大小是4/8
+printf("%d\n",sizeof(*arr));//1  arr是首元素的地址，*arr就是首元素
+printf("%d\n",sizeof(arr[1]));1
+printf("%d\n",sizeof(&arr));//4/8-地址
+printf("%d\n",sizeof(&arr+1));//4/8
+printf("%d\n",sizeof(&arr[0]+1));//4/8
+```
+
+```c
+char arr[]={'a','b','c','d','e','f'};
+
+printf("%d\n",strlen(arr));//随机值
+printf("%d\n",strlen(arr+0));//随机值
+printf("%d\n",strlen(*arr));//错误的表达
+printf("%d\n",strlen(arr[1]));//错误的表达
+printf("%d\n",strlen(&arr));//随机值
+printf("%d\n",strlen(&arr+1));//随机值-6
+printf("%d\n",strlen(arr));//随机值-1
+```
+
+```c
+char arr[]="abcdef";
+
+printf("%d\n",sizeof(arr));//7-数组的大小
+printf("%d\n",sizeof(arr+0));//4/8-地址-首元素
+printf("%d\n",sizeof(*arr));//1-*arr是首元素
+printf("%d\n",sizeof(arr[1]));//1
+printf("%d\n",sizeof(&arr));//4/8
+printf("%d\n",sizeof(&arr+1));//4/8
+printf("%d\n",sizeof(&arr[0]+1));//4/8-&arr[0]+1-第二个元素地址
+```
+
+```c
+char arr[]="abcdef";
+
+printf("%d\n",strlen(arr));//6
+printf("%d\n",strlen(arr+0));//6
+printf("%d\n",strlen(*arr));//err
+printf("%d\n",strlen(arr[1]));//err
+printf("%d\n",strlen(&arr));//6
+printf("%d\n",strlen(&arr+1));//随机值
+printf("%d\n",strlen(&arr[0]+1));//5
+```
+
+```c
+char *p="abcdef";
+
+printf("%d\n",sizeof(p));//4/8-计算指针变量p的大小
+printf("%d\n",sizeof(p+1));//4/8-p+1得到的是字符b的地址
+printf("%d\n",sizeof(*p));//1-*p就是字符串的第一个字符-‘a'
+printf("%d\n",sizeof(p[0]));//1
+printf("%d\n",sizeof(&p));//4/8
+printf("%d\n",sizeof(&p+1));//4/8
+printf("%d\n",sizeof(&p[0]+1));//4/8
+```
+
+```c
+char*p="abcdef";
+
+printf("%d\n",strlen(p));//6
+printf("%d\n",strlen(p+1));//5
+printf("%d\n",strlen(*p));//err
+printf("%d\n",strlen(p[0]));//err
+printf("%d\n",strlen(&p));//随机值
+printf("%d\n",strlen(&p+1));//随机值
+printf("%d\n",strlen(&p[0]+1));//5
+```
+
+```c
+//二维数组
+int a[3][4]={0};
+printf("%d\n",sizeof(a));
+printf("%d\n",sizeof(a[0][0]));
+printf("%d\n",sizeof(a[0]));
+printf("%d\n",sizeof(a[0]+1));
+printf("%d\n",sizeof(*(a[0]+1)));
+printf("%d\n",sizeof(*(a+1));
+printf("%d\n",sizeof(a+1));
+printf("%d\n",sizeof(*(a+1)));
+printf("%d\n",sizeof(&a[0]+1));
+printf("%d\n",sizeof(*(&a[0]+1)));     
+printf("%d\n",sizeof(*a));
+printf("%d\n",sizeof(a[3]));
 ```
 
