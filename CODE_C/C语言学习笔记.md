@@ -1871,17 +1871,917 @@ printf("%d\n",strlen(&p[0]+1));//5
 ```c
 //二维数组
 int a[3][4]={0};
-printf("%d\n",sizeof(a));
-printf("%d\n",sizeof(a[0][0]));
-printf("%d\n",sizeof(a[0]));
-printf("%d\n",sizeof(a[0]+1));
-printf("%d\n",sizeof(*(a[0]+1)));
+printf("%d\n",sizeof(a));//48
+printf("%d\n",sizeof(a[0][0]));//4
+printf("%d\n",sizeof(a[0]));//16-a[0]相当于第一行做为一维数组的数组名-计算第一行大小
+printf("%d\n",sizeof(a[0]+1));//4-首元素地址
+printf("%d\n",sizeof(*(a[0]+1)));//4
 printf("%d\n",sizeof(*(a+1));
-printf("%d\n",sizeof(a+1));
-printf("%d\n",sizeof(*(a+1)));
-printf("%d\n",sizeof(&a[0]+1));
-printf("%d\n",sizeof(*(&a[0]+1)));     
-printf("%d\n",sizeof(*a));
-printf("%d\n",sizeof(a[3]));
+printf("%d\n",sizeof(a+1));//4-a是二维数组的数组名，没有sizeof(a),也没有&(a),所以a是首元素地址
+ //而把二维数组看成一维数组时，二维数组的首元素就是他的第一行，a就是第一行地址
+printf("%d\n",sizeof(*(a+1)));//16
+printf("%d\n",sizeof(&a[0]+1));//4
+printf("%d\n",sizeof(*(&a[0]+1)));//16     
+printf("%d\n",sizeof(*a));//16
+printf("%d\n",sizeof(a[3]));//16
+```
+
+```c
+ int a[5] = {1, 2, 3, 4, 5};
+ int *ptr = (int *)(&a + 1);
+ printf("%d,%d\n", *(a + 1), *(ptr - 1));
+//2，5
+```
+
+```c
+ struct Test
+  {
+  int Num;
+  char *pcName;
+  short sDate;
+  char cha[2];
+  short sBa[4];
+  } * p;
+
+//假设p的值为0x100000,如下表达式的值分别为?
+//已知，结构体Test类型的变量大小是20个字节
+   p = (struct Test *)0x100000;
+   printf("%p\n", p + 0x1);//相当于跳过一个结构体
+   printf("%p\n", (unsigned long)p + 0x1);//相当于就加一个字节
+   printf("%p\n", (unsigned int *)p + 0x1);//相当于+1个int*
+
+//0x00100014
+//0x00100001
+//0x00100004
+```
+
+```c
+ int a[4] = {1, 2, 3, 4};
+  int *ptr1 = (int *)(&a + 1);
+  int *ptr2 = (int *)((int)a + 1);
+  printf("%x,%x", ptr1[-1], *ptr2);
+//4,2000000
+```
+
+```c
+ int a[3][2] = {(0, 1), (2, 3), (4, 5)};//逗号表达式
+ int *p;
+ p = a[0];
+ printf("%d", p[0]);
+//1
+```
+
+逗号表达式，相当于内存
+
+| 1    | 3    |
+| ---- | ---- |
+| 4    | 0    |
+| 0    | 0    |
+
+```c
+ int a[5][5];
+  int(*p)[4];//数组指针，指向四个元素，每次+1跳4个元素
+  p = a;
+  printf("%p,%d\n", &p[4][2] - &a[4][2] ,&p[4][2]-&a[4][2]);//&p[4][2]---a[3][4]
+//FFFFFFFC,-4
+```
+
+![QQ图片20220127142633](QQ图片20220127142633.png)
+
+
+
+```c
+  int aa[2][5] = {1,2,3,4,5,6,7,8,9,10};
+
+  int *ptr1 = (int *)(&aa + 1);
+  int *ptr2 = (int *)(*(aa + 1));//得到第二行首元素地址
+
+  printf("%d,%d\n", *(ptr1 - 1), *(ptr2 - 1));
+//10,5
+```
+
+```c
+    char* a[] = { "work", "at", "alibaba" };
+	char** pa = a;
+
+	pa++;
+	printf("%s\n",*pa)
+      //at
+```
+
+![FA%{X4KCD4E49}$KV%ONN7](FA%{X4K[CD4E49}$KV%ONN7.png)
+
+```c
+ char *c[] = {"ENTER", "NEW", "POINT", "FIRST"};
+  char **cp[] = {c + 3, c + 2, c + 1, c};
+  char ***cpp = cp;
+
+  printf("%s\n", **++cpp);
+  printf("%s\n", *--*++cpp + 3);
+  printf("%s\n", *cpp[-2] + 3);
+  printf("%s\n", cpp[-1][-1] + 1);//*(*(cpp-1)-1)+1
+//POINT
+//ER
+//ST
+//EW
+```
+
+![QQ图片20220127161350](QQ图片20220127161350.png)
+
+```c
+//让字符串逆序打印
+void reverse(char *str)
+{
+  assert(str);
+  int len = strlen(str);
+
+  char *left = str;
+  char *right = str + len - 1;
+
+  while(left<right)
+  {
+    char tmp = *left;
+    *left = *right;
+    *right = tmp;
+    left++;
+    right--;
+  }
+}
+```
+
+```c
+for (int i = 0; i < n;i++)
+  {
+    ret = ret * 10 + a;
+    sum += ret;
+  }
+  //2+22+222+222
+ //循环内的表达极简，注意理解
+```
+
+```c
+ for (int i = 1634; i <= 10000;i++)
+  {
+    int ge=0, shi=0, bai=0, qian=0, wan=0;
+    int j = i / 10;
+    int count=1;
+    int sum = 0;
+    int a[4]={i};
+    while(j!=0)
+    {
+      a[count] = j;
+      count++;
+      j = j / 10;
+    }
+  
+  switch (count)
+  {
+  case 1:
+    ge = a[0];
+    sum = ge;
+    break;
+  case 2:
+    shi = a[1];
+    ge = a[0] % 10;
+    sum = shi * shi + ge * ge;
+    break;
+  case 3:
+    bai = a[2];
+    shi = a[1] % 10;
+    ge = a[0] % 10;
+    sum = bai * bai * bai + shi * shi*shi + ge * ge * ge;
+    break;
+  case 4:
+    qian = a[3];
+    bai = a[2] % 10;
+    shi = a[1] % 10;
+    ge = a[0] % 10;
+    sum = qian * qian * qian * qian + bai * bai * bai * bai + shi * shi * shi * shi + ge * ge * ge * ge;
+    break;
+  case 5:
+    wan = a[4];
+    qian = a[3] % 10;
+    bai = a[2] % 10;
+    shi = a[1] % 10;
+    ge = a[0] % 10;
+    sum = wan * wan * wan * wan * wan +qian* qian * qian * qian * qian +bai* bai * bai * bai * bai + shi*shi * shi * shi * shi + ge*ge * ge * ge * ge;
+    break;
+  default:
+    break;
+  }
+  
+  if(sum==i)
+  {
+    printf("水仙花数:%d\n", i);
+  }
+}
+```
+
+```c
+
+  for (int i = 1; i <= 10000;i++)
+  {
+    //判断i是否为水仙花数(自幂数)
+    //1.计算i的位数 - count位数
+    int count = 1;
+    int tmp = i;
+    int sum = 0;
+    while(tmp/10!=0)
+    {
+      count++;
+      tmp = tmp / 10;
+    }
+//2.计算i的每一位的count次方之和 sum
+    tmp = i;
+    while(tmp)
+    {
+      sum+=pow(tmp % 10, count);//<math.h>库函数，求n方的
+      tmp /= 10;
+    }
+    if(i==sum)
+    {
+      printf("%d\n", sum);
+    }
+  }
+```
+
+通过比较上面两个代码，自己的编码习惯以及对问题解决的理解都有待加强。
+
+##### 打印菱形
+
+```c
+ int n=0;
+  scanf("%d", &n);
+  char arr[2 * n - 1];
+  for (int i = 0; i < 2 * n - 1;i++)
+  {
+    arr[i] = ' ';
+  }
+
+  int right = n - 1;
+  int left = n -1;
+
+  for (int i = 0; i < n;i++)
+  {
+    for (int j = left; j <= right;j++)
+    {
+      arr[j] = '*';
+    }
+    left--;
+    right++;
+    for (int j = 0; j < 2 * n - 1;j++)
+    {
+      printf("%c ", arr[j]);
+    }
+    printf("\n");
+  }
+
+  left = 0;
+  right = 2 * n -2;
+  for (int i = 0; i < n - 1;i++)
+  {
+    left++;
+    right--;
+    for (int j = 0; j < left;j++)
+    {
+      arr[j] =' ';
+    }
+    for (int j = right + 1; j < 2 * n - 1;j++)
+    {
+      arr[j] = ' ';
+    }
+
+      for (int j = 0; j < 2 * n - 1; j++)
+      {
+        printf("%c ", arr[j]);
+      }
+    printf("\n");
+  }
+```
+
+```c
+int line = 0;
+  scanf("%d", &line);
+  //打印上半部分
+  for (int i = 0; i < line;i++)
+  {
+    //打印空格
+    for (int j = 0; j < line - 1 - i;j++)
+    {
+      printf(" ");
+    }
+
+    //打印*号
+    for(int j = 0;j<2*i+1;j++)
+    {
+      printf("*");
+    }
+    printf("\n");
+  }
+
+  //打印下半部分
+  for (int i = 0; i < line - 1;i++)
+ {
+   //打印空格
+   for (int j = 0; j < i + 1;j++)
+   {
+     printf(" ");
+   }
+
+   //打印*号
+   for (int j = 0; j < 2 * (line - 1 - i) - 1;j++)
+   {
+     printf("*");
+   }
+   printf("\n");
+ }
+```
+
+```c
+//喝汽水问题
+//一瓶汽水一元钱，两个空瓶换一瓶，试问20元可以喝多少瓶
+int money = 0;
+  int total = 0;
+  int empty = 0;
+  scanf("%d", &money);
+  //买回来的汽水喝掉
+  total = money;
+  empty = money;
+  //换回来的汽水
+  while(empty>1)
+  {
+    total += empty/2;
+    empty = empty / 2 + empty % 2;
+  }
+//这个循环就很巧妙
+  printf("toatl=%d\n", total);
+```
+
+```c
+//让奇数排在前面，偶数排在后面
+void move(int arr[],int sz)
+{
+  int left = 0;
+  int right = sz - 1;
+  while(left<right)
+  {
+    //从左边找偶数
+    while((left<right)&&(arr[left]%2==1))
+    {
+      left++;
+    }
+    //从右边找奇数
+    while ((left<right)&&(arr[right]%2==0))
+    {
+      right--;
+    }
+    if(left<right)
+    {
+      int tmp = arr[left];
+      arr[left] = arr[right];
+      arr[right] = tmp;
+    }
+    
+  }
+}
+```
+
+```c
+//5位运动员参加了10米平台跳水比赛，有人让他们预测比赛结果
+/*A选手：B第二，我第三；
+  B选手：我第二，E第四；
+  C选手:我第一，D第二；
+  D选手:C最后,我第三;
+  E选手:我第四,A第一；
+  比赛结束后，每位选手都说对了一半，请编程确定比赛的名次
+*/
+  int a = 0;
+  int b = 0;
+  int c = 0;
+  int d = 0;
+  int e = 0;
+  for (a = 1; a <= 5;a++)
+   {
+     for (b = 1; b <= 5;b++)
+     {
+       for (c = 1; c <= 5;c++)
+       {
+         for (d = 1; d <= 5;d++)
+         {
+           for (e = 1; e <= 5;e++)
+           {
+             if(((b==2)+(a==3)==1)&&
+                ((b==2)+(e==4)==1)&&
+                ((c==1)+(d==2)==1)&&
+                ((c==5)+(d==3)==1)&&
+                ((e==4)+(a==1)==1))
+            
+            if(a*b*c*d*e==120)
+            {
+              printf("a=%d,b=%d,c=%d,d=%d,e=%d\n", a, b, c, d, e);
+            }
+
+           }
+         }
+
+       }
+     }
+   }
+//穷举法
+```
+
+#### 左旋字符串的K个字符
+
+```c
+void left_move(char*arr,int k)
+{
+  assert(arr != NULL);
+  int len = strlen(arr);
+  for (int i = 0; i < k;i++)
+  {
+    //左旋转一个字符
+    //1
+    char tmp = *arr;
+    //2
+    for (int j = 0; j < len - 1;j++)
+    {
+      *(arr + j) = *(arr + j + 1);
+    }
+    //3
+    *(arr + len - 1) = tmp;
+  }
+}
+//暴力求解算法
+```
+
+```c
+//三步求解法
+//ab cdef
+//ba fedc
+//cdefab
+void reverse(char* left,char* right)
+{
+  assert(left != NULL);
+  assert(right != NULL);
+  while(left<right)
+  {
+    char tmp = *left;
+    *left = *right;
+    *right = tmp;
+    left++;
+    right--;
+  }
+}
+
+void left_move(char* arr,int k)
+{
+  assert(arr);
+  int len = strlen(arr);
+  assert(k <= len);
+  reverse(arr, arr + k - 1);//逆序左边
+  reverse(arr + k, arr + len - 1);//逆序右边
+  reverse(arr, arr + len - 1);//逆序整体
+}
+```
+
+```c
+//判断两个字符串是否为同一字符串自旋
+int is_left_move(char *s1,char *s2)
+{
+  int len = strlen(s1);
+  for (int i = 0; i < len;i++)
+  {
+    left_move(s1, 1);
+    int ret = strcmp(s1, s2);
+    if(ret==0)
+      return 1;
+  }
+  return 0;
+}
+```
+
+```c
+int is_left_move(char*str1,char*str2)
+{
+  int len1 = strlen(str1);
+  int len2 = strlen(str2);
+  if(len1!=len2)
+  {
+    return 0;
+  }
+  // 1.在str1字符串中追加一个str1字符串
+  // strcat(str1,str1);//err,无法添加和自己一样的字符串
+  const char *str3 = str1;
+  strncat(str1, str3, len1);//abcdefabcdef
+  //2.判断str2指向的字符串是否是str1指向的字符串的子串
+  //strstr-找子串的
+  char *ret = strstr(str1, str2);
+  if(ret==NULL)
+    return 0;
+  else
+    return 1;
+}
+```
+
+```c
+//杨氏矩阵-从左向右递增-从上到下递增
+//找一个数
+int FindNum(int arr[3][3],int k,int row,int col)
+{
+  int x = 0;
+  int y = col - 1;
+
+  while(x<=row-1&&y>=0)
+  {
+    if(arr[x][y]>k)
+    {
+      y--;
+    }
+    else if(arr[x][y]<k)
+    {
+      x++;
+    }
+    else
+    {
+      return 1;
+    }
+  }
+  //找不到
+  return 0;
+}
+```
+
+#### 字符串函数
+
+##### strlen
+
+- 字符串已经'\0'作为结束标志，strlen函数返回的是在字符串中'\0'前面出现的字符个数
+
+
+-    参数指向的字符串必须要以'\0'结束
+
+- 注意函数的返回值size_t，是无符号
+
+  ##### strcpy
+
+
+- 源字符串必须以'\0'结束
+
+- 会将源字符串中的'\0'拷贝到目标空间
+
+- 目标空间必须足够大，以确保能存放源字符串
+
+- 目标空间必须可变
+
+  ```c
+  //strtok函数
+  char arr[] = "zpw@bitedu.tech";
+    char *p = "@.";
+
+    char buf[1024] = {0};
+    strcpy(buf, arr);
+
+    char *ret = strtok(arr, p);
+    printf("%s\n", ret);
+
+    ret = strtok(NULL, p);
+    printf("%s\n", ret);
+
+    ret = strtok(NULL, p);
+    printf("%s\n", ret);
+  ```
+
+```c
+for(ret=strtok(arr,p);ret!=NULL;ret=strtok(NULL,p))
+{
+  printf("%s\n",ret);
+}
+```
+
+#####结构体内存对齐
+
+1. 第一个成员在与结构体变量偏移量为0的地址处。
+2. 其他成员变量要对齐到某个数字（对齐数）的整数倍的地址处。
+  对齐数 = 编译器默认的一个对齐数 与 该成员大小的较小值。
+  VS中默认的值为8
+3. 结构体总大小为最大对齐数（每个成员变量都有一个对齐数）的整数倍。
+4. 如果嵌套了结构体的情况，嵌套的结构体对齐到自己的最大对齐数的整数倍处，结构体的整
+  体大小就是所有最大对齐数（含嵌套结构体的对齐数）的整数倍。
+  为什么存在内存对齐?
+  大部分的参考资料都是如是说的：
+5. 平台原因(移植原因)：
+  不是所有的硬件平台都能访问任意地址上的任意数据的；某些硬件平台只能在某些地址处取某些特
+  定类型的数据，否则抛出硬件异常。
+  ​
+6. 性能原因：
+  数据结构(尤其是栈)应该尽可能地在自然边界上对齐。
+  原因在于，为了访问未对齐的内存，处理器需要作两次内存访问；而对齐的内存访问仅需要一次访
+  问。
+  总体来说：
+  结构体的内存对齐是拿空间来换取时间的做法。
+
+##### 修改默认对齐数
+
+```c
+#pragma pack(8)//设置默认对齐数为8
+struct s1
+{
+  char c1;
+  int i;
+  char c2;
+}
+#pragama pack()//取消设置的默认对齐数，还原为默认
+```
+
+##### union
+
+```c
+int check_sys()
+{
+  union
+  {
+    char c;
+    int i;
+  }u;
+  
+  u.i=1;
+  //返回1，表示小端
+  //返回2，表示大端
+  return u.c;
+}
+```
+
+#### 通讯录管理
+
+#####contact.h
+
+```c
+#ifndef __contact_H_
+#define __contact_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX 1000
+#define MAX_NAME 20
+#define MAX_SEX 5
+#define MAX_TELE 12
+#define MAX_ADDR 30
+
+enum Option
+{
+    EXIT,
+    ADD,
+    DEL,
+    SEARCH,
+    MODIFY,
+    SHOW,
+    SORT
+};
+
+struct PeoInfo
+{
+    char name[MAX_NAME];
+    int age;
+    char sex[MAX_SEX];
+    char tele[MAX_TELE];
+    char addr[MAX_ADDR];
+};
+
+//通讯录类型
+struct Contact
+{
+    struct PeoInfo data[MAX];//存放一个信息
+    int size;//记录当前已经有的元素个数
+};
+
+//声明函数
+//初始化通讯录的函数
+void InitContact(struct Contact *ps);
+
+//增加一个信息到通讯录
+void AddContact(struct Contact *ps);
+
+//打印通讯录中的信息
+void ShowContact(const struct Contact *ps);
+
+//删除指定的联系人
+void DelContact(struct Contact *ps);
+
+//查找指定的联系人
+void SearchContact(const struct Contact *ps);
+
+//修改指定联系人
+void ModifyContact(struct Contact *ps);
+
+#endif
+```
+
+##### Contact.c
+
+```c
+#include "contact.h"
+
+void InitContact(struct Contact *ps)
+{
+    memset(ps->data, 0, sizeof(ps->data));
+    ps->size = 0;//设置通讯录最初只有0个元素
+}
+
+void AddContact(struct Contact *ps)
+{
+    if(ps->size==MAX)
+    {
+        printf("通讯录已满,无法增加\n");
+    }
+    else
+    {
+        printf("请输入名字:>");
+        scanf("%s", ps->data[ps->size].name);
+        printf("请输入年龄:>");
+        scanf("%d", &ps->data[ps->size].age);
+        printf("请输入性别:>");
+        scanf("%s", ps->data[ps->size].sex);
+        printf("请输入电话:>");
+        scanf("%s", ps->data[ps->size].tele);
+        printf("请输入地址:>");
+        scanf("%s", ps->data[ps->size].addr);
+
+        ps->size++;
+        printf("添加成功\n");
+    }
+}
+
+void ShowContact(const struct Contact *ps)
+{
+    if(ps->size==0)
+    {
+        printf("通讯录为空格\n");
+    }
+    else
+      {
+          printf("%-20s\t%-4s\t%-5s\t%-12s\t%-20s\n", "名字", "年龄", "性别", "电话", "地址");
+          for (int i = 0; i < ps->size;i++)
+          {
+              printf("%-20s\t%-4d\t%-5s\t%-12s\t%-20s\n",
+                     ps->data[i].name,
+                     ps->data[i].age,
+                     ps->data[i].sex,
+                     ps->data[i].tele,
+                     ps->data[i].addr);
+         }
+      }  
+}
+
+//该函数只能在该函数内调用
+static int FindByName(const struct Contact *ps,char name[MAX_NAME])
+{
+    for (int i = 0; i < ps->size - 1;i++)
+    {
+        if(0==strcmp(ps->data[i].name,name))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void DelContact(struct Contact *ps)
+{
+    char name[MAX_NAME];
+    printf("请输入要删除的名字:>");
+    scanf("%s", name);
+    int pos = FindByName(ps, name);
+
+
+    //删除
+    if(pos==-1)
+     {
+         printf("要删除的人不存在\n");
+     }
+     else
+     {
+         //删除数据
+         for (int j = pos; j < ps->size-1;j++)
+         {
+             ps->data[j] = ps->data[j + 1];
+         }
+
+         ps->size--;
+     }
+ }
+
+
+void SearchContact(const struct Contact *ps)
+{
+    char name[MAX_NAME];
+    printf("请输入要查找人的名字:>");
+    scanf("%s", name);
+    int pos = FindByName(ps, name);
+    if(pos==-1)
+    {
+        printf("要查找的人不存在\n");
+    }
+    else
+    {
+          printf("%-20s\t%-4s\t%-5s\t%-12s\t%-20s\n", "名字", "年龄", "性别", "电话", "地址");
+          printf("%-20s\t%-4d\t%-5s\t%-12s\t%-20s\n",
+                     ps->data[pos].name,
+                     ps->data[pos].age,
+                     ps->data[pos].sex,
+                     ps->data[pos].tele,
+                     ps->data[pos].addr);
+    }
+}
+
+void ModifyContact(struct Contact *ps)
+{
+    char Name[MAX_NAME];
+    printf("请输入要修改人的名字:>");
+    scanf("%s", Name);
+    int pos = FindByName(ps, Name);
+    if(pos==-1)
+    {
+        printf("要修改人的信息不存在\n");
+    }
+    else
+    {
+        printf("请输入名字:>");
+        scanf("%s", ps->data[pos].name);
+        printf("请输入年龄:>");
+        scanf("%d", &ps->data[pos].age);
+        printf("请输入性别:>");
+        scanf("%s", ps->data[pos].sex);
+        printf("请输入电话:>");
+        scanf("%s", ps->data[pos].tele);
+        printf("请输入地址:>");
+        scanf("%s", ps->data[pos].addr);
+
+        printf("修改完成\n");
+    }
+}
+```
+
+##### test.c
+
+```c
+#include "contact.h"
+#include "contact.c"
+
+void menu()
+{
+    printf("*****************************************\n");
+    printf("*******1.add        2.del       *********\n");
+    printf("*******3.search     4.modify    *********\n");
+    printf("*******5.show       6.sort      *********\n");
+    printf("*******0.exit                   *********\n");
+    printf("*****************************************\n");
+}
+
+int main()
+{
+    int input = 0;
+    //创建通讯录
+    struct Contact con;//con就是通讯录，里面包含：1000的元素的数和size
+    //初始化通讯录
+    InitContact(&con);
+    do
+     {
+        menu();
+        printf("请选择:>");
+        scanf("%d", &input);
+        switch(input)
+        {
+            case ADD:
+                AddContact(&con);
+                break;
+            case DEL:
+                DelContact(&con);
+                break;
+            case SEARCH:
+                SearchContact(&con);
+                break;
+            case MODIFY:
+                ModifyContact(&con);
+                break;
+            case SHOW:
+                ShowContact(&con);
+                break;
+            case SORT:
+                SortContact(&con);
+                break;
+            case EXIT:
+                printf("退出通讯录\n");
+                break;
+            default:
+                printf("输入有错,请重新输入\n");
+                break;
+        }
+    } while (input);
+  
+   system("pause");
+   return 0;
+}
 ```
 
