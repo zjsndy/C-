@@ -11,15 +11,26 @@
 #include <time.h>
 #include <string.h>
 #include <windows.h>
+#include <assert.h>
 
 
 int main ()
 {
-  int n = 10;
-  int *p = &n;
-  int **pp = &p;
-  test(pp);
-  test(&p);
+  struct s3
+  {
+    double d;
+    char c;
+    int i;
+  };
+
+  struct s4
+  {
+    char c1;
+    struct s3 s3;
+    double d;
+  };
+  printf("%d\n",(int) sizeof(struct s4));
+
   system("pause");
   return 0;
 }

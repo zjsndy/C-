@@ -7,6 +7,7 @@
 **************************************************************/
 #include <stdio.h> 
 #include <stdlib.h> 
+#include <string.h>
 
  struct stu
     {
@@ -43,11 +44,41 @@ int cmp_stu_by_name(const void*e1,const void*e2)
     return strcmp(((struct stu *)e1)->name, ((struct stu *)e2)->name);
 }
 
+void Swap(char* buf1,char* buf2,int width)
+{
+    for (int i = 0; i < width;i++)
+    {
+        char tmp = *buf1;
+        *buf1 = *buf2;
+        *buf2 = tmp;
+        buf1++;
+        buf2++;
+    }
+}
+
+//实现bubble_sort函数的程序员，他是否知道未来排序的数据类型-不知道
+//那程序员也不知道待比较的两个元素的类型
+void bubble_sort(void* base,int sz,int width,int (*cmp)(const void*e1,const void*e2))
+{
+    for (int i = 0; i < sz - 1;i++)
+    {
+        for (int j = 0; j < sz - 1 - i;j++)
+        {
+            if(cmp((char*)base+j*width,(char*)base+(j+1)*width)>0)
+            {
+                Swap((char *)base + j * width, (char *)base + (j + 1) *width, width);
+            }
+            
+        }
+    }
+}
+
 void test1()
 {
     int arr[10] = {9, 8, 6, 5, 1, 2, 7, 3, 4, 0};
     int sz = sizeof(arr) / sizeof(arr[0]);
-    qsort(arr, sz, sizeof(arr[0]), cmp_int);
+  //  qsort(arr, sz, sizeof(arr[0]), cmp_int);
+    bubble_sort(arr, sz, sizeof(arr[0]), cmp_int);
     for (int i = 0; i < sz;i++)
     {
         printf("%d ", arr[i]);
@@ -89,10 +120,10 @@ void test4()
 
 int main ()
 {
-    //test1();
+    test1();
     //test2();
     //test3();
-    test4();
+    //test4();
     system("pause");
     return 0;
 }
