@@ -1,0 +1,10 @@
+1
+5
+6
+ABCDE
+AB
+AD
+BE
+CD
+CE
+DE

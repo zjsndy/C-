@@ -1,0 +1,11 @@
+6
+8
+ABCDEF
+AB
+AC
+AD
+CB
+CE
+DE
+FD
+FE

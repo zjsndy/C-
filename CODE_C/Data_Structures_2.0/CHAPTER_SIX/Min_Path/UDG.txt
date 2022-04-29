@@ -1,0 +1,12 @@
+7
+9
+ABCDEFG
+AB
+AC
+BD
+CD
+CE
+CF
+DE
+EF
+FG
